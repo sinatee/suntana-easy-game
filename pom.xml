@@ -2,8 +2,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.suntana</groupId>
-  <artifactId>game</artifactId>
+  <groupId>com.ponggame</groupId>
+  <artifactId>ponggame</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -23,4 +23,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>
