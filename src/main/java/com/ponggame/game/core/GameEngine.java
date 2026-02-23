@@ -281,8 +281,7 @@ public class GameEngine {
         player2.draw(g2);
         ball.draw(g2);
         skillBox.draw(g2);
-        p1Skills.draw(g2, 20, height - 80);
-        p2Skills.draw(g2, width - 140, height - 80);
+
         g2.setFont(new Font("Segoe UI", Font.BOLD, 40));
         g2.setColor(Color.WHITE);
         g2.drawString(score1 + " : " + score2, width / 2 - 50, 50);

@@ -54,11 +54,15 @@ public class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
 
             if (delta >= 1) {
-                // 1. Update Game Logic
                 engine.update();
                 
-                // 2. Draw Graphics (Requests Swing to paint)
-                repaint();
+                // Instead of just repaint(), we refresh the component and its neighbors
+                repaint(); 
+                
+                // If you want the SkillConsole to update at the same frame rate:
+                if (this.getParent() != null) {
+                    this.getParent().repaint(); 
+                }
                 
                 delta--;
             }
@@ -85,5 +89,11 @@ public class GamePanel extends JPanel implements Runnable {
         engine.draw(g2);
 
         g2.dispose();
+    }
+
+    
+
+    public GameEngine getEngine() {
+        return this.engine;
     }
 }
