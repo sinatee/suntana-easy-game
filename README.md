@@ -1,6 +1,11 @@
-# suntana-easy-game
+# 🏓 Suntana Easy Game - System Architecture
+
+โปรเจกต์นี้มีการนำหลักการ **Object-Oriented Programming (OOP) ทั้ง 4 Concepts** มาประยุกต์ใช้อย่างเต็มรูปแบบ เพื่อให้โครงสร้างโค้ดเป็นระเบียบ ยืดหยุ่น และง่ายต่อการพัฒนาต่อยอด
+
+<details>
+<summary><b>📌 1. Game State & Entity (เวอร์ชันดั้งเดิม)</b></summary>
+
 ```mermaid
-<pre>
 classDiagram
     %% Abstraction & Polymorphism
     class GameState {
@@ -60,8 +65,10 @@ classDiagram
     PlayState --> Ball : contains
     PlayState --> Player : contains
     PlayState --> AIController : contains
+    </details>
 
-
+    <details>
+<summary><b>📌 2. Refactored State Pattern (Abstraction & Polymorphism)</b></summary>
 classDiagram
     %% Abstraction
     class State {
@@ -119,7 +126,10 @@ classDiagram
     PlayState --> Ball : uses
     PlayState --> Player : uses
     PlayState --> AIController : uses
+    </details>
 
+    <details>
+<summary><b>📌 3. Skill System (Inheritance & Composition)</b></summary>
 classDiagram
     class Skill {
         <<abstract>>
@@ -162,8 +172,10 @@ classDiagram
 
     %% Composition
     SkillManager o-- Skill : manages
+    </details>
 
-
+    <details>
+<summary><b>📌 4. Core Game Engine (The Heart of the Game)</b></summary>
 classDiagram
     %% 1. INHERITANCE (การสืบทอด)
     class JPanel { <<built-in>> }
@@ -235,8 +247,10 @@ classDiagram
     GameEngine *-- State : manages
     GameEngine *-- Ball : contains
     GameEngine *-- Paddle : contains
+    </details>
 
-
+    <details>
+<summary><b>📌 5. System & Physics Engine</b></summary>
 classDiagram
     %% Abstraction & Polymorphism
     class KeyListener { <<interface>> }
@@ -266,7 +280,7 @@ classDiagram
         +playClick()$ void
     }
 
-    %% Encapsulation (Suggested Fix: Use Singleton instead of public static)
+    %% Encapsulation
     class Config {
         -static Config instance
         -float masterVolume
@@ -291,7 +305,10 @@ classDiagram
         +checkCollision(Ball ball, Paddle p) boolean
     }
 
+    </details>
 
+<details>
+<summary><b>📌 6. UI Components (Swing Extends)</b></summary>
 classDiagram
     %% 1. INHERITANCE (การสืบทอด)
     class JButton { <<Swing Built-in>> }
@@ -329,7 +346,7 @@ classDiagram
     }
     MenuButton *-- PixelParticle : encapsulates
 
-    %% 3. ABSTRACTION & POLYMORPHISM (จุดที่สามารถพัฒนาเพิ่มได้)
+    %% 3. ABSTRACTION & POLYMORPHISM
     class Drawable {
         <<Interface (Suggestion)>>
         +draw(Graphics g)* void
@@ -345,7 +362,7 @@ classDiagram
         +draw(Graphics g) void
     }
 
-    Drawable <|.. ScoreBoard : implements (แนะนำ)
-    Drawable <|.. PauseOverlay : implements (แนะนำ)
-    Drawable <|.. MenuButton : implements (แนะนำ)
-<pre>
+    Drawable <|.. ScoreBoard : implements
+    Drawable <|.. PauseOverlay : implements
+    Drawable <|.. MenuButton : implements
+    </details>
