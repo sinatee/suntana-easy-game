@@ -63,9 +63,13 @@ public class GameEngine {
     InputHandler input;
 
     private SoundManager bgMusic;
-
+    // ===== BACKGROUND Setting=====
+    private BufferedImage settingBackground;
+    // ===== BACKGROUND GameOver=====
+    private BufferedImage gameOverBackground;
+    // ===== BACKGROUND Play=====
     private BufferedImage playBackground;
-    // ===== PARALLAX BACKGROUND =====
+    // ===== PARALLAX BACKGROUND Title=====
     private BufferedImage titleBackground;
 
     private double bgOffsetX = 0;
@@ -78,13 +82,13 @@ public class GameEngine {
 
     private Font pixelFont;
 
-    //Table Margin
+    // Table Margin
     private int tableMargin = 60;
 
-private int tableLeft;
-private int tableRight;
-private int tableTop;
-private int tableBottom;
+    private int tableLeft;
+    private int tableRight;
+    private int tableTop;
+    private int tableBottom;
 
     public GameEngine(int w, int h) {
         this.width = w;
@@ -92,6 +96,11 @@ private int tableBottom;
         this.uiPanelHeight = 100;
         this.windowHeight = h + uiPanelHeight;
         this.height = windowHeight; // ใช้วาดทั้งหมด
+        // Table Margin
+        tableLeft = tableMargin;
+        tableRight = width - tableMargin;
+        tableTop = tableMargin;
+        tableBottom = gameHeight - tableMargin;
 
         initUI();
 
@@ -99,7 +108,11 @@ private int tableBottom;
         player2 = new Paddle(width - 70, gameHeight / 2 - 60, 20, 120, gameHeight);
         ball = new Ball(width / 2, gameHeight / 2, 15, gameHeight);
         input = new InputHandler(this);
-        skillBox = new SkillBox(width, gameHeight);
+        skillBox = new SkillBox(
+                tableLeft,
+                tableRight,
+                tableTop,
+                tableBottom);
 
         // Load Music
         bgMusic = new SoundManager();
@@ -125,11 +138,17 @@ private int tableBottom;
             e.printStackTrace();
         }
 
-        //Table Margin
-        tableLeft = tableMargin;
-tableRight = width - tableMargin;
-tableTop = tableMargin;
-tableBottom = gameHeight - tableMargin;
+        try {
+            gameOverBackground = ImageIO.read(getClass().getResource("/background/gameOver_bg.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            settingBackground = ImageIO.read(getClass().getResource("/background/setting_bg.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -348,28 +367,18 @@ tableBottom = gameHeight - tableMargin;
 
         g2.setFont(pixelFont);
 
+        // Main text
+        g2.setColor(Color.WHITE);
+        int textX = width / 2 - 220;
+        int textY = 200;
 
-// Main text
-g2.setColor(Color.WHITE);
-int textX = width / 2 - 220;
-int textY = 200;
+        // Shadow
+        g2.setColor(Color.BLACK);
+        g2.drawString("PING PONG", textX + 4, textY + 4);
 
-// Glow Layer
-for (int i = 8; i > 0; i -= 2) {
-    g2.setColor(new Color(0, 255, 180, 40));
-    g2.drawString("PING PONG", textX - i, textY);
-    g2.drawString("PING PONG", textX + i, textY);
-    g2.drawString("PING PONG", textX, textY - i);
-    g2.drawString("PING PONG", textX, textY + i);
-}
-
-// Shadow
-g2.setColor(Color.BLACK);
-g2.drawString("PING PONG", textX + 4, textY + 4);
-
-// Main
-g2.setColor(Color.WHITE);
-g2.drawString("PING PONG", textX, textY);
+        // Main
+        g2.setColor(Color.WHITE);
+        g2.drawString("PING PONG", textX, textY);
 
         startBtn.draw(g2);
         settingsBtn.draw(g2);
@@ -377,6 +386,18 @@ g2.drawString("PING PONG", textX, textY);
     }
 
     private void drawModeSelect(Graphics2D g2) {
+        if (settingBackground != null) {
+
+            int drawX = (int) (-bgOffsetX - 50);
+            int drawY = (int) (-bgOffsetY - 50);
+
+            g2.drawImage(settingBackground,
+                    drawX,
+                    drawY,
+                    width + 100,
+                    height + 100,
+                    null);
+        }
         g2.setColor(textColor);
         g2.setFont(new Font("Segoe UI", Font.BOLD, 50));
         g2.drawString("SELECT MODE", width / 2 - 170, 200);
@@ -386,6 +407,18 @@ g2.drawString("PING PONG", textX, textY);
     }
 
     private void drawSettings(Graphics2D g2) {
+        if (settingBackground != null) {
+
+            int drawX = (int) (-bgOffsetX - 50);
+            int drawY = (int) (-bgOffsetY - 50);
+
+            g2.drawImage(settingBackground,
+                    drawX,
+                    drawY,
+                    width + 100,
+                    height + 100,
+                    null);
+        }
         g2.setColor(textColor);
         g2.setFont(new Font("Segoe UI", Font.BOLD, 50));
         g2.drawString("SETTINGS", width / 2 - 120, 200);
@@ -394,6 +427,18 @@ g2.drawString("PING PONG", textX, textY);
     }
 
     private void drawSpeedMenu(Graphics2D g2) {
+        if (settingBackground != null) {
+
+            int drawX = (int) (-bgOffsetX - 50);
+            int drawY = (int) (-bgOffsetY - 50);
+
+            g2.drawImage(settingBackground,
+                    drawX,
+                    drawY,
+                    width + 100,
+                    height + 100,
+                    null);
+        }
         g2.setColor(textColor);
         g2.setFont(new Font("Segoe UI", Font.BOLD, 50));
         g2.drawString("BALL SPEED", width / 2 - 170, 200);
@@ -416,18 +461,17 @@ g2.drawString("PING PONG", textX, textY);
 
         // วาดเฉพาะพื้นที่เกม
         // ===== Background =====
-if (playBackground != null) {
-    g2.drawImage(playBackground,
-            0,
-            0,
-            width,
-            gameHeight,   // สำคัญ! อย่าใช้ height
-            null);
-} else {
-    g2.setColor(bgColor);
-    g2.fillRect(0, 0, width, gameHeight);
-}
-
+        if (playBackground != null) {
+            g2.drawImage(playBackground,
+                    0,
+                    0,
+                    width,
+                    gameHeight, // สำคัญ! อย่าใช้ height
+                    null);
+        } else {
+            g2.setColor(bgColor);
+            g2.fillRect(0, 0, width, gameHeight);
+        }
 
         player1.draw(g2);
         player2.draw(g2);
@@ -452,15 +496,66 @@ if (playBackground != null) {
         exitToMenuBtn.draw(g2);
     }
 
-    private void drawGameOver(Graphics2D g2) {
-        g2.setColor(textColor);
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 60));
-        g2.drawString("GAME OVER", width / 2 - 200, 300);
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 40));
-        g2.drawString(score1 + " : " + score2, width / 2 - 50, 360);
-        g2.setFont(new Font("Segoe UI", Font.PLAIN, 20));
-        g2.drawString("Click anywhere to return to Menu", width / 2 - 150, 450);
+private void drawGameOver(Graphics2D g2) {
+
+    if (gameOverBackground != null) {
+        int drawX = (int) (-bgOffsetX - 50);
+        int drawY = (int) (-bgOffsetY - 50);
+
+        g2.drawImage(gameOverBackground,
+                drawX,
+                drawY,
+                width + 100,
+                height + 100,
+                null);
     }
+
+    g2.setColor(textColor);
+
+    // ===== GAME OVER =====
+    g2.setFont(pixelFont.deriveFont(48f));
+    String title = "GAME OVER";
+
+    FontMetrics fmTitle = g2.getFontMetrics();
+    int xTitle = (width - fmTitle.stringWidth(title)) / 2;
+    int yTitle = 300;
+
+    g2.drawString(title, xTitle, yTitle);
+
+
+// ===== SCORE (Clear & Bold) =====
+g2.setFont(pixelFont.deriveFont(50f));
+String scoreText = score1 + " : " + score2;
+
+FontMetrics fm = g2.getFontMetrics();
+int x = (width - fm.stringWidth(scoreText)) / 2;
+int y = 360;
+
+// เงาดำ
+g2.setColor(Color.BLACK);
+g2.drawString(scoreText, x + 3, y + 3);
+
+// ขอบรอบตัว (วาดรอบ 4 ทิศ)
+g2.drawString(scoreText, x - 2, y);
+g2.drawString(scoreText, x + 2, y);
+g2.drawString(scoreText, x, y - 2);
+g2.drawString(scoreText, x, y + 2);
+
+// ตัวจริง
+g2.setColor(Color.WHITE);
+g2.drawString(scoreText, x, y);
+
+
+    // ===== MESSAGE =====
+    g2.setFont(pixelFont.deriveFont(20f));
+    String msg = "Click anywhere to return to Menu";
+
+    FontMetrics fmMsg = g2.getFontMetrics();
+    int xMsg = (width - fmMsg.stringWidth(msg)) / 2;
+    int yMsg = 450;
+
+    g2.drawString(msg, xMsg, yMsg);
+}
 
     // ================= MOUSE =================
     public void handleMouseClick(int x, int y) {
@@ -629,7 +724,7 @@ if (playBackground != null) {
         p1Skills.activeSkills.clear();
         p2Skills.inventory.clear();
         p2Skills.activeSkills.clear();
-        ball.reset(width / 2, height / 2, true);
+        ball.reset(width / 2, gameHeight / 2, true);
         ball.setSpeed(ballSpeed);
         skillBox.respawn();
     }

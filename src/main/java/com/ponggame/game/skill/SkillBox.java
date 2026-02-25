@@ -2,31 +2,44 @@ package com.ponggame.game.skill;
 
 import java.awt.*;
 import java.util.Random;
+import javax.swing.ImageIcon;
 
 public class SkillBox {
 
     int x, y;
-    int size = 30;
+    int size = 50;
 
     int screenWidth;
     int screenHeight;
 
-    int marginX = 150;   // ระยะกันขอบซ้ายขวา
-    int marginY = 80;    // กันบนล่าง
+    int marginX = 150; // ระยะกันขอบซ้ายขวา
+    int marginY = 80; // กันบนล่าง
+
+    Image icon;
 
     Random rand = new Random();
 
-    public SkillBox(int screenWidth, int screenHeight) {
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+    int left, right, top, bottom;
+
+    public SkillBox(int left, int right, int top, int bottom) {
+        this.left = left;
+        this.right = right;
+        this.top = top;
+        this.bottom = bottom;
+        try {
+            icon = new ImageIcon(
+                    getClass().getResource("/assets/skillBox.png")).getImage();
+        } catch (Exception e) {
+            System.out.println("Skill image not found");
+        }
         respawn();
     }
 
     public void respawn() {
 
         // โผล่เฉพาะโซนกลางสนาม
-        x = marginX + rand.nextInt(screenWidth - marginX * 2 - size);
-        y = marginY + rand.nextInt(screenHeight - marginY * 2 - size);
+        x = left + rand.nextInt(right - left - size);
+        y = top + rand.nextInt(bottom - top - size);
     }
 
     public Rectangle getRect() {
@@ -34,7 +47,12 @@ public class SkillBox {
     }
 
     public void draw(Graphics2D g2) {
-        g2.setColor(Color.YELLOW);
-        g2.fillRect(x, y, size, size);
+
+        if (icon != null) {
+            g2.drawImage(icon, x, y, size, size, null);
+        } else {
+            g2.setColor(Color.YELLOW);
+            g2.fillRect(x, y, size, size);
+        }
     }
 }
