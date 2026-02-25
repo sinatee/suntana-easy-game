@@ -1,7 +1,7 @@
+```mermaid
 classDiagram
 
 %% ================= CORE =================
-```mermaid
 class GameFrame {
   + GameFrame()
 }
