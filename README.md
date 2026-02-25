@@ -1,12 +1,12 @@
-#System Architecture
+# Game - System Architecture
 
 โปรเจกต์นี้มีการนำหลักการ **Object-Oriented Programming (OOP) ทั้ง 4 Concepts** มาประยุกต์ใช้อย่างเต็มรูปแบบ เพื่อให้โครงสร้างโค้ดเป็นระเบียบ ยืดหยุ่น และง่ายต่อการพัฒนาต่อยอด
 
-### ⚙️ 1. Core Engine & State Pattern
-ส่วนหัวใจหลักของเกมที่คอยควบคุมการทำงานทั้งหมดและจัดการหน้าจอต่างๆ (Abstraction & Polymorphism)
+### ⚙️ Core System, Entities & UI
 
 ```mermaid
 classDiagram
+    %% --- 1. Core Engine & State Pattern ---
     class GamePanel {
         -GameEngine engine
         +startGameThread() void
@@ -39,7 +39,7 @@ classDiagram
     State <|.. PlayState
     State <|.. MenuState
 
-    classDiagram
+    %% --- 2. Game Entities & Physics ---
     class Ball {
         -double x, y
         -double speedX, speedY
@@ -70,7 +70,7 @@ classDiagram
     AIController --> Ball : tracks
     PhysicsEngine --> Ball : applies physics
 
-    classDiagram
+    %% --- 3. Skill System & UI Components ---
     class Skill {
         <<abstract>>
         #long duration
@@ -100,5 +100,3 @@ classDiagram
 
     JButton <|-- PixelArcadeButton : extends
     JPanel <|-- SettingPanel : extends
-
-    
