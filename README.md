@@ -67,7 +67,7 @@ classDiagram
     PlayState --> AIController : contains
     </details>
 
-    <details>
+<details>
 <summary><b>📌 2. Refactored State Pattern (Abstraction & Polymorphism)</b></summary>
 classDiagram
     %% Abstraction
@@ -128,7 +128,7 @@ classDiagram
     PlayState --> AIController : uses
     </details>
 
-    <details>
+<details>
 <summary><b>📌 3. Skill System (Inheritance & Composition)</b></summary>
 classDiagram
     class Skill {
@@ -174,7 +174,7 @@ classDiagram
     SkillManager o-- Skill : manages
     </details>
 
-    <details>
+<details>
 <summary><b>📌 4. Core Game Engine (The Heart of the Game)</b></summary>
 classDiagram
     %% 1. INHERITANCE (การสืบทอด)
@@ -249,7 +249,7 @@ classDiagram
     GameEngine *-- Paddle : contains
     </details>
 
-    <details>
+<details>
 <summary><b>📌 5. System & Physics Engine</b></summary>
 classDiagram
     %% Abstraction & Polymorphism
@@ -304,7 +304,6 @@ classDiagram
         +applyFriction(Ball ball) void
         +checkCollision(Ball ball, Paddle p) boolean
     }
-
     </details>
 
 <details>
