@@ -46,18 +46,39 @@ public class SkillManager {
         return false;
     }
 
-    public void draw(Graphics2D g2, int x, int y) {
+    public void draw(Graphics2D g2, int x, int y, String key1, String key2) {
 
-        for (int i = 0; i < 2; i++) {
-            g2.setColor(Color.DARK_GRAY);
-            g2.fillRect(x + i * 60, y, 50, 50);
+    g2.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
-            if (i < inventory.size()) {
-                g2.setColor(Color.WHITE);
-                g2.drawString(inventory.get(i).getShortName(), x + 10 + i * 60, y + 30);
-            }
+    String[] keys = { key1, key2 };
+
+    for (int i = 0; i < 2; i++) {
+
+        int boxX = x + i * 80;
+        int boxY = y;
+
+        // กล่องพื้น
+        g2.setColor(new Color(40, 40, 40));
+        g2.fillRoundRect(boxX, boxY, 70, 60, 15, 15);
+
+        // ขอบกล่อง
+        g2.setColor(new Color(255, 59, 59));
+        g2.drawRoundRect(boxX, boxY, 70, 60, 15, 15);
+
+        // ปุ่มกำกับ
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawString("[" + keys[i] + "]", boxX + 20, boxY + 15);
+
+        if (i < inventory.size()) {
+            g2.setColor(Color.YELLOW);
+            g2.drawString(
+                inventory.get(i).getShortName(),
+                boxX + 18,
+                boxY + 40
+            );
         }
     }
+}
 
     public void activateFirst() {
 

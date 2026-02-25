@@ -7,9 +7,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     Thread gameThread;
 
-    final int WIDTH = 1000;
-    final int HEIGHT = 600;
+    final int GAME_HEIGHT = 600;   // พื้นที่เล่นจริง
+final int UI_HEIGHT = 100;     // ความสูง Skill Panel
+final int WIDTH = 1000;
+final int HEIGHT = GAME_HEIGHT + UI_HEIGHT; // หน้าต่างจริง
 
+    
     GameEngine engine;
 
     GamePanel() {
@@ -18,7 +21,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
 
-        engine = new GameEngine(WIDTH, HEIGHT);
+        engine = new GameEngine(WIDTH, GAME_HEIGHT);
 
         this.addKeyListener(engine.getInput());
         this.addMouseListener(engine.getInput());
