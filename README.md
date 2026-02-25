@@ -64,7 +64,7 @@ classDiagram
 
     PlayState --> Ball : contains
     PlayState --> Player : contains
-    PlayState --> AIController : contains
+    PlayState --> AIController : contains```mermaid
     </details>
 
 <details>
@@ -364,4 +364,4 @@ classDiagram
     Drawable <|.. ScoreBoard : implements
     Drawable <|.. PauseOverlay : implements
     Drawable <|.. MenuButton : implements
-    </details>```mermaid
+    </details>
