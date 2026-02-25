@@ -364,4 +364,4 @@ classDiagram
     Drawable <|.. ScoreBoard : implements
     Drawable <|.. PauseOverlay : implements
     Drawable <|.. MenuButton : implements
-    </details>
+    </details>```mermaid
