@@ -29,7 +29,7 @@ public class Ball {
         reset(centerX, centerY, true);
     }
 
-    public void update() {
+    public void update(int tableTop, int tableBottom) {
         // Update the visual effect timer (for the ice graphic)
         freezeEffect.update();
 
@@ -41,26 +41,34 @@ public class Ball {
 
         // Bounce off top/bottom walls (only if moving)
         if (!isFrozen) {
-            if (y <= 0 || y >= panelHeight - size) {
+
+            if (y <= tableTop) {
+                y = tableTop;
+                speedY *= -1;
+            }
+
+            if (y + size >= tableBottom) {
+                y = tableBottom - size;
                 speedY *= -1;
             }
         }
     }
 
     public void draw(Graphics2D g2) {
-        
+
         // FIX: If invisible, draw NOTHING (not even ice)
-        if (invisible) return;
+        if (invisible)
+            return;
 
         // If Frozen (and not invisible), draw ice
         if (isFrozen || freezeEffect.isActive()) {
-            freezeEffect.draw(g2, (int)x, (int)y, size, size);
+            freezeEffect.draw(g2, (int) x, (int) y, size, size);
             return;
         }
 
         // Normal drawing
         g2.setColor(Color.WHITE);
-        g2.fillOval((int)x, (int)y, size, size);
+        g2.fillOval((int) x, (int) y, size, size);
     }
 
     public void reverseX() {
@@ -80,7 +88,7 @@ public class Ball {
     }
 
     public Rectangle getRect() {
-        return new Rectangle((int)x, (int)y, size, size);
+        return new Rectangle((int) x, (int) y, size, size);
     }
 
     public void setSpeed(double ballSpeed) {
@@ -97,13 +105,33 @@ public class Ball {
         return invisible;
     }
 
-    public int getX() { return (int)x; }
-    public void setX(int x) { this.x = x; }
-    public int getY() { return (int)y; }
-    public void setY(int y) { this.y = y; }
-    public int getDy() { return (int)speedY; }
-    public void setDy(int dy) { this.speedY = dy; }
-    public int getWidth() { return size; }
+    public int getX() {
+        return (int) x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return (int) y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getDy() {
+        return (int) speedY;
+    }
+
+    public void setDy(int dy) {
+        this.speedY = dy;
+    }
+
+    public int getWidth() {
+        return size;
+    }
 
     // NEW: Method to let GameEngine control the freeze
     public void setFrozen(boolean frozen) {
@@ -112,7 +140,7 @@ public class Ball {
             freezeEffect.activate(1500); // Show ice graphic for 1.5s
         }
     }
-    
+
     public boolean isFrozen() {
         return isFrozen;
     }

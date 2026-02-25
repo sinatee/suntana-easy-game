@@ -78,6 +78,14 @@ public class GameEngine {
 
     private Font pixelFont;
 
+    //Table Margin
+    private int tableMargin = 60;
+
+private int tableLeft;
+private int tableRight;
+private int tableTop;
+private int tableBottom;
+
     public GameEngine(int w, int h) {
         this.width = w;
         this.gameHeight = h; // พื้นที่เล่นจริง
@@ -116,6 +124,12 @@ public class GameEngine {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //Table Margin
+        tableLeft = tableMargin;
+tableRight = width - tableMargin;
+tableTop = tableMargin;
+tableBottom = gameHeight - tableMargin;
 
     }
 
@@ -156,7 +170,7 @@ public class GameEngine {
         p1Skills.update();
         p2Skills.update();
 
-        ball.update();
+        ball.update(tableTop, tableBottom);
 
         // FIXED CURVE SHOT LOGIC
         boolean isBallFrozen = ball.isFrozen();
