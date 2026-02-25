@@ -64,6 +64,7 @@ public class GameEngine {
 
     private SoundManager bgMusic;
 
+    private BufferedImage playBackground;
     // ===== PARALLAX BACKGROUND =====
     private BufferedImage titleBackground;
 
@@ -74,6 +75,8 @@ public class GameEngine {
     private double targetOffsetY = 0;
 
     private double parallaxStrength = 40; // ยิ่งมากยิ่งขยับแรง
+
+    private Font pixelFont;
 
     public GameEngine(int w, int h) {
         this.width = w;
@@ -99,6 +102,21 @@ public class GameEngine {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            pixelFont = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResourceAsStream("/font/PressStart2P-Regular.ttf"))
+                    .deriveFont(48f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            playBackground = ImageIO.read(getClass().getResource("/background/play_bg.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void initUI() {
@@ -314,9 +332,30 @@ public class GameEngine {
         g2.setColor(new Color(0, 0, 0, 120));
         g2.fillRect(0, 0, width, height);
 
-        g2.setColor(textColor);
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 60));
-        g2.drawString("PING PONG", width / 2 - 170, 200);
+        g2.setFont(pixelFont);
+
+
+// Main text
+g2.setColor(Color.WHITE);
+int textX = width / 2 - 220;
+int textY = 200;
+
+// Glow Layer
+for (int i = 8; i > 0; i -= 2) {
+    g2.setColor(new Color(0, 255, 180, 40));
+    g2.drawString("PING PONG", textX - i, textY);
+    g2.drawString("PING PONG", textX + i, textY);
+    g2.drawString("PING PONG", textX, textY - i);
+    g2.drawString("PING PONG", textX, textY + i);
+}
+
+// Shadow
+g2.setColor(Color.BLACK);
+g2.drawString("PING PONG", textX + 4, textY + 4);
+
+// Main
+g2.setColor(Color.WHITE);
+g2.drawString("PING PONG", textX, textY);
 
         startBtn.draw(g2);
         settingsBtn.draw(g2);
@@ -362,8 +401,19 @@ public class GameEngine {
     private void drawPlay(Graphics2D g2) {
 
         // วาดเฉพาะพื้นที่เกม
-        g2.setColor(bgColor);
-        g2.fillRect(0, 0, width, gameHeight);
+        // ===== Background =====
+if (playBackground != null) {
+    g2.drawImage(playBackground,
+            0,
+            0,
+            width,
+            gameHeight,   // สำคัญ! อย่าใช้ height
+            null);
+} else {
+    g2.setColor(bgColor);
+    g2.fillRect(0, 0, width, gameHeight);
+}
+
 
         player1.draw(g2);
         player2.draw(g2);
