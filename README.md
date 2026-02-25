@@ -1,8 +1,7 @@
-🧠 FULL SYSTEM CLASS DIAGRAM
 classDiagram
 
 %% ================= CORE =================
-
+```mermaid
 class GameFrame {
   + GameFrame()
 }
@@ -10,8 +9,8 @@ class GameFrame {
 class GamePanel {
   - Thread gameThread
   - GameEngine engine
-  + run()
-  + paintComponent(Graphics)
+  + run() void
+  + paintComponent(Graphics) void
 }
 
 class GameEngine {
@@ -24,10 +23,10 @@ class GameEngine {
   - SkillBox skillBox
   - InputHandler input
   - SoundManager bgMusic
-  + update()
-  + draw(Graphics2D)
-  + openPauseMenu()
-  + isPlaying()
+  + update() void
+  + draw(Graphics2D) void
+  + openPauseMenu() void
+  + isPlaying() boolean
 }
 
 class GameEngineHolder {
@@ -35,8 +34,8 @@ class GameEngineHolder {
   + static GameEngine engineRef
 }
 
-GameFrame --> GamePanel
-GamePanel --> GameEngine
+GameFrame --> "1" GamePanel
+GamePanel --> "1" GameEngine
 GameEngineHolder --> GameEngine
 GameEngineHolder --> Ball
 
@@ -48,9 +47,9 @@ class Paddle {
   + boolean up
   + boolean down
   + boolean reversed
-  + update()
-  + draw(Graphics2D)
-  + setSpeed(int)
+  + update() void
+  + draw(Graphics2D) void
+  + setSpeed(int) void
 }
 
 class Ball {
@@ -58,48 +57,49 @@ class Ball {
   + double y
   - boolean isFrozen
   - FreezeEffect freezeEffect
-  + update()
-  + draw(Graphics2D)
-  + reverseX()
-  + setFrozen(boolean)
+  + update() void
+  + draw(Graphics2D) void
+  + reverseX() void
+  + setFrozen(boolean) void
 }
 
 class Player {
   - int skillCount
-  + update()
-  + draw(Graphics2D)
-  + useSkill()
+  + update() void
+  + draw(Graphics2D) void
+  + useSkill() boolean
 }
 
 class AIController {
   - Paddle paddle
   - Ball ball
-  + update(double)
+  + update(double) void
 }
 
-GameEngine *-- Paddle
-GameEngine *-- Ball
+GameEngine "1" *-- "2" Paddle
+GameEngine "1" *-- "1" Ball
+GameEngine --> Player
 AIController --> Paddle
 AIController --> Ball
-Ball *-- FreezeEffect
+Ball "1" *-- "1" FreezeEffect
 
 %% ================= SKILL =================
 
 class SkillManager {
   + ArrayList~Skill~ inventory
   + ArrayList~Skill~ activeSkills
-  + addSkill(SkillType)
-  + useSkill(int)
-  + hasActive(SkillType)
-  + update()
+  + addSkill(SkillType) void
+  + useSkill(int) void
+  + hasActive(SkillType) boolean
+  + update() void
 }
 
 class Skill {
   + SkillType type
   + long duration
   + boolean active
-  + activate()
-  + isExpired()
+  + activate() void
+  + isExpired() boolean
 }
 
 class SkillType {
@@ -115,13 +115,13 @@ class SkillType {
 }
 
 class SkillBox {
-  + respawn()
-  + draw(Graphics2D)
+  + respawn() void
+  + draw(Graphics2D) void
 }
 
-GameEngine *-- SkillManager
-GameEngine *-- SkillBox
-SkillManager --> Skill
+GameEngine "1" *-- "2" SkillManager
+GameEngine "1" *-- "1" SkillBox
+SkillManager "1" --> "0..*" Skill
 Skill --> SkillType
 
 %% ================= SYSTEM =================
@@ -132,30 +132,31 @@ class InputHandler {
 
 class SoundManager {
   - Clip clip
-  + playLoop(String)
-  + stop()
+  + playLoop(String) void
+  + stop() void
 }
 
 class PixelSound {
-  + playClick()
+  + playClick() void
 }
 
 class SaveManager {
-  + saveSettings()
-  + loadSettings()
+  + saveSettings() void
+  + loadSettings() void
 }
 
 class Config {
-  + static masterVolume
-  + static bgmVolume
-  + static sfxVolume
-  + static aiDifficulty
+  + static float masterVolume
+  + static float bgmVolume
+  + static float sfxVolume
+  + static int aiDifficulty
 }
 
 GameEngine --> InputHandler
 GameEngine --> SoundManager
 MenuButton --> PixelSound
 SaveManager --> Config
+SettingPanel --> Config
 
 %% ================= UI =================
 
@@ -163,19 +164,19 @@ class MenuButton {
   - Rectangle bounds
   + boolean hovered
   + boolean pressed
-  + update()
-  + draw(Graphics2D)
+  + update() void
+  + draw(Graphics2D) void
 }
 
 class PixelArcadeButton {
 }
 
 class PauseOverlay {
-  + draw(Graphics)
+  + draw(Graphics) void
 }
 
 class ScoreBoard {
-  + draw(Graphics)
+  + draw(Graphics) void
 }
 
 class SettingPanel {
@@ -183,7 +184,6 @@ class SettingPanel {
 
 GameEngine --> MenuButton
 GameEngine --> PauseOverlay
-SettingPanel --> Config
 
 %% ================= STATE =================
 
@@ -197,36 +197,3 @@ class GameState {
 }
 
 GameEngine --> GameState
-
-🧩 Design Structure
-Core Layer
- ├── GameEngine (Main Logic Controller)
- ├── GamePanel (Game Loop)
- └── GameFrame (Window)
-
-Entity Layer
- ├── Ball
- ├── Paddle
- ├── Player
- └── AIController
-
-Skill System
- ├── SkillManager
- ├── Skill
- ├── SkillType (Enum)
- ├── SkillBox
- └── FreezeEffect
-
-System Layer
- ├── InputHandler
- ├── SoundManager
- ├── PixelSound
- ├── SaveManager
- └── Config
-
-UI Layer
- ├── MenuButton
- ├── PixelArcadeButton
- ├── PauseOverlay
- ├── ScoreBoard
- └── SettingPanel
