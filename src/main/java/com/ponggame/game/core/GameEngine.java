@@ -63,6 +63,8 @@ public class GameEngine {
     InputHandler input;
 
     private SoundManager bgMusic;
+    // ===== BACKGROUND Pause=====
+    private BufferedImage pauseBackground;
     // ===== BACKGROUND Setting=====
     private BufferedImage settingBackground;
     // ===== BACKGROUND GameOver=====
@@ -146,6 +148,11 @@ public class GameEngine {
 
         try {
             settingBackground = ImageIO.read(getClass().getResource("/background/setting_bg.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            pauseBackground = ImageIO.read(getClass().getResource("/background/pause_bg.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -399,8 +406,13 @@ public class GameEngine {
                     null);
         }
         g2.setColor(textColor);
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 50));
-        g2.drawString("SELECT MODE", width / 2 - 170, 200);
+        g2.setFont(pixelFont.deriveFont(48f));
+        String title = "SELECT MODE";
+
+        FontMetrics fmTitle = g2.getFontMetrics();
+        int xTitle = (width - fmTitle.stringWidth(title)) / 2;
+        int yTitle = 200;
+        g2.drawString(title, xTitle, yTitle);
         pvpBtn.draw(g2);
         cpuBtn.draw(g2);
         backToTitleBtn.draw(g2);
@@ -420,8 +432,14 @@ public class GameEngine {
                     null);
         }
         g2.setColor(textColor);
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 50));
-        g2.drawString("SETTINGS", width / 2 - 120, 200);
+        g2.setFont(pixelFont.deriveFont(48f));
+        String title = "SETTINGS";
+
+        FontMetrics fmTitle = g2.getFontMetrics();
+        int xTitle = (width - fmTitle.stringWidth(title)) / 2;
+        int yTitle = 200;
+
+        g2.drawString(title, xTitle, yTitle);
         ballSpeedBtn.draw(g2);
         backBtn.draw(g2);
     }
@@ -440,8 +458,13 @@ public class GameEngine {
                     null);
         }
         g2.setColor(textColor);
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 50));
-        g2.drawString("BALL SPEED", width / 2 - 170, 200);
+        g2.setFont(pixelFont.deriveFont(48f));
+        String title = "BALL SPEED";
+
+        FontMetrics fmTitle = g2.getFontMetrics();
+        int xTitle = (width - fmTitle.stringWidth(title)) / 2;
+        int yTitle = 200;
+        g2.drawString(title, xTitle, yTitle);
 
         g2.setColor(Color.GRAY);
         g2.fillRect(sliderX, sliderY, sliderWidth, sliderHeight);
@@ -486,76 +509,92 @@ public class GameEngine {
     }
 
     private void drawPause(Graphics2D g2) {
-        g2.setColor(new Color(0, 0, 0, 150));
-        g2.fillRect(0, 0, width, height);
+        if (pauseBackground != null) {
+
+            int drawX = (int) (-bgOffsetX - 50);
+            int drawY = (int) (-bgOffsetY - 50);
+
+            g2.drawImage(pauseBackground,
+                    drawX,
+                    drawY,
+                    width + 100,
+                    height + 100,
+                    null);
+        } else {
+            g2.setColor(bgColor);
+            g2.fillRect(0, 0, width, gameHeight);
+        }
         g2.setColor(textColor);
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 60));
-        g2.drawString("PAUSED", width / 2 - 130, 200);
+        g2.setFont(pixelFont.deriveFont(48f));
+        String title = "PAUSED";
+
+        FontMetrics fmTitle = g2.getFontMetrics();
+        int xTitle = (width - fmTitle.stringWidth(title)) / 2;
+        int yTitle = 200;
+        g2.drawString(title, xTitle, yTitle);
         continueBtn.draw(g2);
         pauseSettingsBtn.draw(g2);
         exitToMenuBtn.draw(g2);
     }
 
-private void drawGameOver(Graphics2D g2) {
+    private void drawGameOver(Graphics2D g2) {
 
-    if (gameOverBackground != null) {
-        int drawX = (int) (-bgOffsetX - 50);
-        int drawY = (int) (-bgOffsetY - 50);
+        if (gameOverBackground != null) {
+            int drawX = (int) (-bgOffsetX - 50);
+            int drawY = (int) (-bgOffsetY - 50);
 
-        g2.drawImage(gameOverBackground,
-                drawX,
-                drawY,
-                width + 100,
-                height + 100,
-                null);
+            g2.drawImage(gameOverBackground,
+                    drawX,
+                    drawY,
+                    width + 100,
+                    height + 100,
+                    null);
+        }
+
+        g2.setColor(textColor);
+
+        // ===== GAME OVER =====
+        g2.setFont(pixelFont.deriveFont(48f));
+        String title = "GAME OVER";
+
+        FontMetrics fmTitle = g2.getFontMetrics();
+        int xTitle = (width - fmTitle.stringWidth(title)) / 2;
+        int yTitle = 300;
+
+        g2.drawString(title, xTitle, yTitle);
+
+        // ===== SCORE (Clear & Bold) =====
+        g2.setFont(pixelFont.deriveFont(50f));
+        String scoreText = score1 + " : " + score2;
+
+        FontMetrics fm = g2.getFontMetrics();
+        int x = (width - fm.stringWidth(scoreText)) / 2;
+        int y = 360;
+
+        // เงาดำ
+        g2.setColor(Color.BLACK);
+        g2.drawString(scoreText, x + 3, y + 3);
+
+        // ขอบรอบตัว (วาดรอบ 4 ทิศ)
+        g2.drawString(scoreText, x - 2, y);
+        g2.drawString(scoreText, x + 2, y);
+        g2.drawString(scoreText, x, y - 2);
+        g2.drawString(scoreText, x, y + 2);
+
+        // ตัวจริง
+        g2.setColor(Color.WHITE);
+        g2.drawString(scoreText, x, y);
+
+        // ===== MESSAGE =====
+        g2.setFont(pixelFont.deriveFont(20f));
+        String msg = "Click anywhere to return to Menu";
+
+        FontMetrics fmMsg = g2.getFontMetrics();
+        int xMsg = (width - fmMsg.stringWidth(msg)) / 2;
+        int yMsg = 450;
+
+        g2.drawString(msg, xMsg, yMsg);
     }
-
-    g2.setColor(textColor);
-
-    // ===== GAME OVER =====
-    g2.setFont(pixelFont.deriveFont(48f));
-    String title = "GAME OVER";
-
-    FontMetrics fmTitle = g2.getFontMetrics();
-    int xTitle = (width - fmTitle.stringWidth(title)) / 2;
-    int yTitle = 300;
-
-    g2.drawString(title, xTitle, yTitle);
-
-
-// ===== SCORE (Clear & Bold) =====
-g2.setFont(pixelFont.deriveFont(50f));
-String scoreText = score1 + " : " + score2;
-
-FontMetrics fm = g2.getFontMetrics();
-int x = (width - fm.stringWidth(scoreText)) / 2;
-int y = 360;
-
-// เงาดำ
-g2.setColor(Color.BLACK);
-g2.drawString(scoreText, x + 3, y + 3);
-
-// ขอบรอบตัว (วาดรอบ 4 ทิศ)
-g2.drawString(scoreText, x - 2, y);
-g2.drawString(scoreText, x + 2, y);
-g2.drawString(scoreText, x, y - 2);
-g2.drawString(scoreText, x, y + 2);
-
-// ตัวจริง
-g2.setColor(Color.WHITE);
-g2.drawString(scoreText, x, y);
-
-
-    // ===== MESSAGE =====
-    g2.setFont(pixelFont.deriveFont(20f));
-    String msg = "Click anywhere to return to Menu";
-
-    FontMetrics fmMsg = g2.getFontMetrics();
-    int xMsg = (width - fmMsg.stringWidth(msg)) / 2;
-    int yMsg = 450;
-
-    g2.drawString(msg, xMsg, yMsg);
-}
 
     // ================= MOUSE =================
     public void handleMouseClick(int x, int y) {
