@@ -144,4 +144,6 @@ public class Ball {
     public boolean isFrozen() {
         return isFrozen;
     }
+
+    
 }

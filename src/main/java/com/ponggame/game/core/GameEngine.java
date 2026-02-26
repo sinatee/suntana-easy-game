@@ -30,6 +30,7 @@ public class GameEngine {
     public static final int SETTINGS = 4;
     public static final int BALL_SPEED_MENU = 5;
     public static final int PAUSE_MENU = 6;
+    public static final int SOUND_SETTINGS = 7; // เลขถัดจากของคุณ
 
     int gameState = TITLE;
     int previousState = TITLE;
@@ -92,6 +93,18 @@ public class GameEngine {
     private int tableTop;
     private int tableBottom;
 
+    // Sound Manager
+    MenuButton soundBtn;
+    MenuButton soundBackBtn;
+    MenuButton muteBtn;
+    // ===== BACKGROUND Sound Setting=====
+    private BufferedImage soundSettingBackground;
+
+    int volumeSliderX, volumeSliderY, volumeSliderWidth = 400;
+    int volumeSliderValue = 50;
+    boolean volumeDragging = false;
+    private boolean musicStarted = false;
+
     public GameEngine(int w, int h) {
         this.width = w;
         this.gameHeight = h; // พื้นที่เล่นจริง
@@ -151,8 +164,15 @@ public class GameEngine {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         try {
             pauseBackground = ImageIO.read(getClass().getResource("/background/pause_bg.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            soundSettingBackground = ImageIO.read(getClass().getResource("/background/soundSetting_bg.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -168,8 +188,27 @@ public class GameEngine {
         cpuBtn = new MenuButton(width / 2 - 150, 370, 300, 80, "PLAYER VS CPU");
         backToTitleBtn = new MenuButton(width / 2 - 150, 480, 300, 70, "BACK TO MAIN");
 
-        ballSpeedBtn = new MenuButton(width / 2 - 150, 320, 300, 80, "BALL SPEED");
-        backBtn = new MenuButton(width / 2 - 150, 470, 300, 70, "BACK");
+        int buttonWidth = 300;
+        int buttonHeight = 80;
+        int spacing = 24; // ระยะห่างระหว่างปุ่ม
+
+        int centerX = width / 2 - buttonWidth / 2;
+
+        // คำนวณจุดเริ่มให้ปุ่มทั้ง 3 อยู่กึ่งกลางแนวตั้ง
+        int totalHeight = buttonHeight * 3 + spacing * 2;
+        int startY = height / 2 - totalHeight + 235;
+
+        ballSpeedBtn = new MenuButton(centerX, startY, buttonWidth, buttonHeight, "BALL SPEED");
+
+        soundBtn = new MenuButton(centerX,
+                startY + buttonHeight + spacing,
+                buttonWidth, buttonHeight,
+                "SOUND");
+
+        backBtn = new MenuButton(centerX,
+                startY + (buttonHeight + spacing) * 2,
+                buttonWidth, 70,
+                "BACK");
 
         continueBtn = new MenuButton(width / 2 - 150, 260, 300, 70, "CONTINUE");
         pauseSettingsBtn = new MenuButton(width / 2 - 150, 350, 300, 70, "SETTINGS");
@@ -177,6 +216,13 @@ public class GameEngine {
 
         sliderX = width / 2 - sliderWidth / 2;
         sliderY = 350;
+
+        // Sound Manager
+        muteBtn = new MenuButton(width / 2 - 150, 390, 300, 70, "MUTE");
+        soundBackBtn = new MenuButton(width / 2 - 150, 470, 300, 70, "BACK");
+
+        volumeSliderX = width / 2 - 200;
+        volumeSliderY = 330;
     }
 
     // ================= UPDATE =================
@@ -308,7 +354,9 @@ public class GameEngine {
                 p1Skills.addSkill(random);
             else
                 p2Skills.addSkill(random);
-            skillBox.respawn();
+            skillBox.respawnNearBall(
+                    ball.getX(),
+                    ball.getY());
         }
 
         // Scoring
@@ -350,6 +398,7 @@ public class GameEngine {
             case PLAY -> drawPlay(g2);
             case PAUSE_MENU -> drawPause(g2);
             case GAME_OVER -> drawGameOver(g2);
+            case SOUND_SETTINGS -> drawSoundSettings(g2);
         }
     }
 
@@ -441,7 +490,9 @@ public class GameEngine {
 
         g2.drawString(title, xTitle, yTitle);
         ballSpeedBtn.draw(g2);
+        soundBtn.draw(g2);
         backBtn.draw(g2);
+
     }
 
     private void drawSpeedMenu(Graphics2D g2) {
@@ -620,7 +671,10 @@ public class GameEngine {
 
             // Start music only if it's not already playing (assuming SoundManager handles
             // checks or needs a flag)
-            bgMusic.playLoop("/sound/Jirat Lorvitayapan - OOPTheme1 2026-02-18 14_43.wav");
+            if (!musicStarted) {
+                bgMusic.playLoop("/sound/Jirat Lorvitayapan - OOPTheme1 2026-02-18 14_43.wav");
+                musicStarted = true;
+            }
         } else if (gameState == MODE_SELECT) {
             if (pvpBtn.contains(x, y)) {
                 vsCPU = false;
@@ -639,6 +693,9 @@ public class GameEngine {
                 gameState = BALL_SPEED_MENU;
             if (backBtn.contains(x, y))
                 gameState = previousState;
+            if (soundBtn.contains(x, y))
+                gameState = SOUND_SETTINGS;
+
         } else if (gameState == BALL_SPEED_MENU) {
             if (new Rectangle(sliderX, sliderY - 10, sliderWidth, 30).contains(x, y)) {
                 dragging = true;
@@ -657,6 +714,24 @@ public class GameEngine {
                 gameState = TITLE;
         } else if (gameState == GAME_OVER) {
             gameState = TITLE;
+        } else if (gameState == SOUND_SETTINGS) {
+
+            if (new Rectangle(volumeSliderX, volumeSliderY - 10,
+                    volumeSliderWidth, 30).contains(x, y)) {
+
+                volumeDragging = true;
+                updateVolumeSlider(x);
+            }
+
+            if (muteBtn.contains(x, y)) {
+                muteBtn.pressed = true; // ⭐ เพิ่ม
+                bgMusic.setMuted(!bgMusic.isMuted());
+            }
+
+            if (soundBackBtn.contains(x, y)) {
+                soundBackBtn.pressed = true; // ⭐ เพิ่ม
+                gameState = SETTINGS;
+            }
         }
     }
 
@@ -676,6 +751,10 @@ public class GameEngine {
         pauseSettingsBtn.hovered = pauseSettingsBtn.contains(x, y);
         exitToMenuBtn.hovered = exitToMenuBtn.contains(x, y);
 
+        muteBtn.hovered = muteBtn.contains(x, y);
+        soundBackBtn.hovered = soundBackBtn.contains(x, y);
+        soundBtn.hovered = soundBtn.contains(x, y);
+
         if (gameState == TITLE) {
 
             double percentX = (double) x / width - 0.5;
@@ -689,6 +768,7 @@ public class GameEngine {
     public void handleMouseRelease() {
 
         dragging = false;
+        volumeDragging = false;
 
         startBtn.pressed = false;
         settingsBtn.pressed = false;
@@ -704,11 +784,18 @@ public class GameEngine {
         continueBtn.pressed = false;
         pauseSettingsBtn.pressed = false;
         exitToMenuBtn.pressed = false;
+
+        muteBtn.pressed = false;
+        soundBackBtn.pressed = false;
     }
 
     public void handleMouseDrag(int x) {
+
         if (dragging)
             updateSlider(x);
+
+        if (volumeDragging && gameState == SOUND_SETTINGS)
+            updateVolumeSlider(x);
     }
 
     private void updateSlider(int x) {
@@ -765,7 +852,9 @@ public class GameEngine {
         p2Skills.activeSkills.clear();
         ball.reset(width / 2, gameHeight / 2, true);
         ball.setSpeed(ballSpeed);
-        skillBox.respawn();
+        skillBox.respawnNearBall(
+                ball.getX(),
+                ball.getY());
     }
 
     public InputHandler getInput() {
@@ -801,6 +890,10 @@ public class GameEngine {
         continueBtn.update();
         pauseSettingsBtn.update();
         exitToMenuBtn.update();
+
+        soundBtn.update();
+        soundBackBtn.update();
+        muteBtn.update();
     }
 
     private void drawSkillPanel(Graphics2D g2) {
@@ -815,5 +908,53 @@ public class GameEngine {
 
         p1Skills.draw(g2, 60, panelY + 20, "Q", "E");
         p2Skills.draw(g2, width - 220, panelY + 20, "O", "P");
+    }
+
+    private void updateVolumeSlider(int x) {
+        volumeSliderValue = (x - volumeSliderX) * 100 / volumeSliderWidth;
+
+        if (volumeSliderValue < 0)
+            volumeSliderValue = 0;
+        if (volumeSliderValue > 100)
+            volumeSliderValue = 100;
+
+        if (!bgMusic.isMuted()) {
+            bgMusic.setVolume(volumeSliderValue / 100f);
+        }
+    }
+
+    private void drawSoundSettings(Graphics2D g2) {
+
+        if (soundSettingBackground != null) {
+            g2.drawImage(soundSettingBackground, 0, 0, width, height, null);
+        }
+
+        g2.setColor(textColor);
+        g2.setFont(pixelFont.deriveFont(46f));
+
+        String title = "SOUND SETTINGS";
+        FontMetrics fmTitle = g2.getFontMetrics();
+        int xTitle = (width - fmTitle.stringWidth(title)) / 2;
+
+        g2.drawString(title, xTitle, 200);
+
+        // ===== VOLUME TEXT =====
+        g2.setFont(pixelFont.deriveFont(20f));
+        g2.drawString("Volume: " + volumeSliderValue + "%", width / 2 - 110, 300);
+
+        // ===== SLIDER =====
+        g2.setColor(Color.GRAY);
+        g2.fillRect(volumeSliderX, volumeSliderY, volumeSliderWidth, 6);
+
+        int knobX = volumeSliderX + (volumeSliderValue * volumeSliderWidth / 100);
+        g2.setColor(accentColor);
+        g2.fillOval(knobX - 10, volumeSliderY - 7, 20, 20);
+
+        // ===== MUTE BUTTON =====
+        muteBtn.text = bgMusic.isMuted() ? "UNMUTE" : "MUTE";
+        muteBtn.draw(g2);
+
+        // ===== BACK =====
+        soundBackBtn.draw(g2);
     }
 }

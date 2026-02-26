@@ -46,6 +46,24 @@ public class SkillBox {
         return new Rectangle(x, y, size, size);
     }
 
+    public void respawnNearBall(int ballX, int ballY) {
+
+    int radius = 150;
+
+    int newX = ballX + rand.nextInt(radius * 2) - radius;
+    int newY = ballY + rand.nextInt(radius * 2) - radius;
+
+    // กันหลุดขอบโต๊ะ
+    if (newX < left) newX = left;
+    if (newX > right - size) newX = right - size;
+
+    if (newY < top) newY = top;
+    if (newY > bottom - size) newY = bottom - size;
+
+    x = newX;
+    y = newY;
+}
+
     public void draw(Graphics2D g2) {
 
         if (icon != null) {

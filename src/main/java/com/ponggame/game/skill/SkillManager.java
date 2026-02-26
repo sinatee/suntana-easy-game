@@ -7,6 +7,17 @@ public class SkillManager {
 
     public ArrayList<Skill> inventory = new ArrayList<>();
     public ArrayList<Skill> activeSkills = new ArrayList<>();
+    private Font pixelFont;
+
+    public SkillManager() {
+        try {
+            pixelFont = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResourceAsStream("/font/PressStart2P-Regular.ttf"))
+                    .deriveFont(48f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void addSkill(SkillType type) {
         if (inventory.size() >= 2)
@@ -48,7 +59,7 @@ public class SkillManager {
 
     public void draw(Graphics2D g2, int x, int y, String key1, String key2) {
 
-    g2.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    g2.setFont(pixelFont.deriveFont(12f));
 
     String[] keys = { key1, key2 };
 

@@ -9,7 +9,7 @@ import com.ponggame.game.system.PixelSound;
 public class MenuButton {
 
     Rectangle bounds;
-    String text;
+    public String text;
 
     public boolean hovered = false;
     public boolean pressed = false;
